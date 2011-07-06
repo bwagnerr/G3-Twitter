@@ -2,8 +2,7 @@ package g3.twitter.view;
 
 import java.util.List;
 
-import g3.twitter.controller.Twitter;
-import g3.twitter.model.Tweet;
+import g3.twitter.controller.ITwitter;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -11,15 +10,17 @@ import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JPanel;
 
+import twitter4j.Tweet;
+
 public class ContentPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	
 	SidePanel sidePanel;
 	MainPanel mainPanel;
 	
-	Twitter twitter;
+	ITwitter twitter;
 
-	public ContentPanel(Twitter twitter){
+	public ContentPanel(ITwitter twitter){
 		this.twitter = twitter;
 		define();
 		position();		

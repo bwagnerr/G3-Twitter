@@ -1,6 +1,6 @@
 package g3.twitter.view;
 
-import g3.twitter.controller.Twitter;
+import g3.twitter.controller.ITwitter;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,12 +15,12 @@ public class MainWindow extends JFrame implements ActionListener{
 	
 	ContentPanel contentPanel;
 	
-	public MainWindow(Twitter twitter){
+	public MainWindow(ITwitter twitter){
 		super("Twitter");
 		configure(twitter);
 	}
 	
-	public void configure(Twitter twitter){
+	public void configure(ITwitter twitter){
 		setDefaultCloseOperation(EXIT_ON_CLOSE);	
 		contentPanel = new ContentPanel(twitter);
 		getContentPane().add(contentPanel);

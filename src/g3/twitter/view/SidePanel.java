@@ -1,6 +1,6 @@
 package g3.twitter.view;
 
-import g3.twitter.controller.Twitter;
+import g3.twitter.controller.ITwitter;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,16 +27,16 @@ public class SidePanel extends JPanel implements ActionListener {
 	JTextField searchField;
 	JButton searchButton;
 	ContentPanel container;
-	Twitter twitter;
+	ITwitter twitter;
 
-	public SidePanel(Twitter twitter, ContentPanel container) {
+	public SidePanel(ITwitter twitter, ContentPanel container) {
 		define(twitter);
 		position();
 		this.container = container;
 		this.twitter = twitter;
 	}
 
-	public void define(Twitter twitter) {
+	public void define(ITwitter twitter) {
 		
 		setMinimumSize(new Dimension(200,768));
 		setBorder(BorderFactory.createMatteBorder(0,0,0,1,Color.BLACK));
@@ -46,7 +46,6 @@ public class SidePanel extends JPanel implements ActionListener {
 		userName = new JTextPane();
 		userName.setEditable(false);
 		userName.setContentType("text/html");
-		userName.setText("<html><b>"+twitter.user().name()+"</b></html>");
 		user.add(userName);
 		
 		search = new JPanel();
@@ -92,7 +91,7 @@ public class SidePanel extends JPanel implements ActionListener {
 		Options option = Options.valueOf(e.getActionCommand());
 		if(option == Options.SEARCH){
 			String query = searchField.getText();
-			this.container.searchResults(twitter.searchTweets(query));						
+			//this.container.searchResults(twitter.searchTweets(query));						
 		}
 	}
 
