@@ -1,22 +1,21 @@
 package g3.twitter.controller;
 
 
+import g3.twitter.model.Tweet;
+
 import java.util.List;
 
-import twitter4j.Status;
-import twitter4j.Tweet;
 import twitter4j.TwitterException;
-import twitter4j.User;
 
 public interface ITwitter {
 	
-	public void tweet(String mensagem) throws TwitterException;
+	public void tweet(String message) throws TwitterException;
 	
-	public List<Tweet> searchTweets(String pMsg) throws TwitterException;
+	public List<Tweet> searchTweets(String searchquery) throws TwitterException;
+				
+	public List<Tweet> timeline() throws TwitterException;
 		
-	public List<User> searchUser(String userName) throws TwitterException;
-		
-	public List<Status> tweets() throws TwitterException;
-		
-	public User user() throws TwitterException;
+	public String currentUser() throws TwitterException;
+	
+	public void followUser(String screenUserName) throws TwitterException;
 }

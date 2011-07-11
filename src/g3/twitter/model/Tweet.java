@@ -1,24 +1,36 @@
 package g3.twitter.model;
 
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
 public class Tweet {
+
+	private String author;
 	private String message;
-	private User user;
+	private Date timestamp;
 	
-	public boolean post (String message, User user){
-		boolean posted = false;
-		if(message.length()>0 && message.length()<141){
-			this.user = user;
-			this.message = message;
-			posted = true;
-		}
-		return posted;
+	public Tweet(String author, String message, Date timestamp){
+		this.author = author;
+		this.message = message;
+		this.timestamp = timestamp;
 	}
 	
-	public String show(){
+	public String author(){
+		return author;
+	}
+	
+	public String message(){
 		return message;
 	}
-
-	public User author(){
-		return user;
+	
+	public String timestamp(){
+		SimpleDateFormat tweetFormat = new SimpleDateFormat("HH:mm - dd/MMM/yy");
+		String dateString = new String( tweetFormat.format( timestamp ) );
+		return dateString;
+	}
+	
+	@Override
+	public String toString(){
+		return "\n"+author+":\n"+message+"\nPosted at: "+timestamp()+"\n"; 
 	}
 }

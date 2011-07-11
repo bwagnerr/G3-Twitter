@@ -2,13 +2,10 @@ package g3.twitter.view;
 
 import g3.twitter.controller.ITwitter;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.JFrame;
 
 
-public class MainWindow extends JFrame implements ActionListener{
+public class MainWindow extends JFrame{
 	
 
 	private static final long serialVersionUID = 1L;
@@ -27,10 +24,6 @@ public class MainWindow extends JFrame implements ActionListener{
 		setSize(800,600);
 		setResizable(false);
 	}
-		
-	public void actionPerformed (ActionEvent e){
-	}
-	
 	
 	public void display(){
 		pack();

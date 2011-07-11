@@ -3,6 +3,7 @@ package g3.twitter.view;
 import java.util.List;
 
 import g3.twitter.controller.ITwitter;
+import g3.twitter.model.Tweet;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -10,7 +11,6 @@ import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JPanel;
 
-import twitter4j.Tweet;
 
 public class ContentPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
@@ -42,8 +42,8 @@ public class ContentPanel extends JPanel{
 	public void horizontalAnalysis(GroupLayout gl){
 		SequentialGroup sg = gl.createSequentialGroup();
 		
-		sg.addComponent(sidePanel);
 		sg.addComponent(mainPanel);
+		sg.addComponent(sidePanel);
 		
 		gl.setHorizontalGroup(sg);
 	}

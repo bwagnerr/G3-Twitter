@@ -1,6 +1,8 @@
 package g3.twitter.view;
 
 import g3.twitter.controller.ITwitter;
+import g3.twitter.model.Tweet;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -10,17 +12,14 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.Timer;
-
-import twitter4j.Status;
-import twitter4j.Tweet;
 import twitter4j.TwitterException;
 
 public class MainPanel extends JPanel implements ActionListener{
@@ -32,13 +31,11 @@ public class MainPanel extends JPanel implements ActionListener{
 
 	JTabbedPane tabs;
 	
-	JTextArea home;
-	JTextPane homeContent;
-	
-	JPanel mentions;
-	JTextPane mentionsContent;
+	JList home;
+	JList search;
 		
 	ITwitter twitter;
+	
 
 	public MainPanel(ITwitter twitter){
 		define();
@@ -66,13 +63,12 @@ public class MainPanel extends JPanel implements ActionListener{
 		tabs = new JTabbedPane();
 		tabs.setMaximumSize(new Dimension(600,575));
 
-		home = new JTextArea ();
+		home = new JList();
 
-		mentions = new JPanel();
+		search = new JList();
 
-
-		tabs.addTab( "Home" , home );
-		tabs.addTab( "Mentions" , mentions );
+		tabs.addTab( "Timeline" , home);
+		tabs.addTab( "Search" , search);
 	}
 
 	public void position() {
@@ -106,51 +102,37 @@ public class MainPanel extends JPanel implements ActionListener{
 		Options opcao = Options.valueOf(e.getActionCommand());
 		if(opcao == Options.TWEET){
 			String text = tweetField.getText();
-			try{
-				twitter.tweet(text);
-			}catch(Exception x){
-				int i = 2;
-			}
+			
+			try {twitter.tweet(text);}
+			catch (TwitterException e1) {}
 			loadTimeline();
 			tweetField.setText("");
 			}
 	}
 	
-	private void setAtualizador()
-	{
-		int delay = 10000; 
+	private void setAtualizador(){
+		int delay = 15000; 
 		ActionListener taskPerformer = new ActionListener() { 
 		  public void actionPerformed(ActionEvent evt) {
-			  //loadTimeline();			  		  
+			  loadTimeline();			  		  
 		  } 
 		}; 
 		new Timer(delay, taskPerformer).start();
 	}
 	
 	public void searchResults(List<Tweet> results){
-		home.removeAll();
-		
-		for(Tweet tweet:results)
-			//home.add(newTweet(tweet));
-		
-		tabs.repaint();
-
+		TweetListModel searchModel = new TweetListModel(results);
+		tabs.setSelectedIndex(1);
+		search.setModel(searchModel);
 	}
 	
 	private void loadTimeline(){
-		home.removeAll();
-		
-		GroupLayout gl = new GroupLayout(home);
-		gl.setHorizontalGroup(gl.createParallelGroup());
 		try {
-			for(Status status : twitter.tweets())
-				home.setText(status.getText());
-		} catch (TwitterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		tabs.repaint();
+			List<Tweet> timeline = twitter.timeline();
+			TweetListModel tweetsModel = new TweetListModel(timeline);
+			tabs.setSelectedIndex(0);
+			home.setModel(tweetsModel);
+		}catch (TwitterException e){}
 	}
 	
 }
