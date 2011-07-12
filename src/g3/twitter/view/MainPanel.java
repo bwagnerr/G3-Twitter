@@ -1,6 +1,9 @@
 package g3.twitter.view;
 
-import g3.twitter.controller.ITwitter;
+import g3.twitter.controller.TwitterInterface;
+import g3.twitter.exception.PostFailException;
+import g3.twitter.exception.SearchFailException;
+import g3.twitter.exception.UpdateTimelineFailException;
 import g3.twitter.model.Tweet;
 
 import java.awt.Color;
@@ -8,19 +11,21 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
-import javax.swing.Timer;
-import twitter4j.TwitterException;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
 
 public class MainPanel extends JPanel implements ActionListener{
 	private static final long serialVersionUID = 1L;
@@ -31,17 +36,22 @@ public class MainPanel extends JPanel implements ActionListener{
 
 	JTabbedPane tabs;
 	
-	JList home;
-	JList search;
-		
-	ITwitter twitter;
+	JScrollPane homeScroll;
+	JTable home;
 	
+	JScrollPane searchScroll;
+	JTable search;
+		
+	TwitterInterface twitter;
+	
+	Timer timer;
+	TimerTask task;
 
-	public MainPanel(ITwitter twitter){
+	public MainPanel(TwitterInterface twitter){
 		define();
 		position();
-		setAtualizador();
 		this.twitter = twitter;
+		setAtualizador(10000);
 	}
 
 	public void define(){
@@ -63,12 +73,26 @@ public class MainPanel extends JPanel implements ActionListener{
 		tabs = new JTabbedPane();
 		tabs.setMaximumSize(new Dimension(600,575));
 
-		home = new JList();
+		home = new JTable();
+		home.setRowHeight(40);
+		home.setShowGrid(true);
+		home.setGridColor(Color.BLACK);
+		home.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		home.setTableHeader(null);
+		homeScroll = new JScrollPane(home);
 
-		search = new JList();
+		search = new JTable();
+		search.setRowHeight(40);
+		search.setShowGrid(true);
+		search.setGridColor(Color.BLACK);
+		search.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		search.setTableHeader(null);
+		searchScroll = new JScrollPane(search);
 
-		tabs.addTab( "Timeline" , home);
-		tabs.addTab( "Search" , search);
+		tabs.addTab( "Timeline" , homeScroll);
+		tabs.addTab( "Search" , searchScroll);
+		
+		timer = new Timer();
 	}
 
 	public void position() {
@@ -102,37 +126,59 @@ public class MainPanel extends JPanel implements ActionListener{
 		Options opcao = Options.valueOf(e.getActionCommand());
 		if(opcao == Options.TWEET){
 			String text = tweetField.getText();
-			
-			try {twitter.tweet(text);}
-			catch (TwitterException e1) {}
+			try{
+				twitter.tweet(text);
+			}catch (PostFailException exception) {				
+				JOptionPane.showMessageDialog(null, exception.getMessage());
+			}
 			loadTimeline();
+			tabs.setSelectedIndex(0);
 			tweetField.setText("");
 			}
 	}
 	
-	private void setAtualizador(){
-		int delay = 15000; 
-		ActionListener taskPerformer = new ActionListener() { 
-		  public void actionPerformed(ActionEvent evt) {
-			  loadTimeline();			  		  
-		  } 
-		}; 
-		new Timer(delay, taskPerformer).start();
+	protected void setAtualizador(int period){
+		task = new TimerTask(){    	
+	    	public void run(){
+	    		loadTimeline();
+	    	}};
+	    timer.scheduleAtFixedRate(task, 0, period);
 	}
 	
-	public void searchResults(List<Tweet> results){
-		TweetListModel searchModel = new TweetListModel(results);
-		tabs.setSelectedIndex(1);
-		search.setModel(searchModel);
+	protected void changeTimer(int period){
+		if(period == 0){
+	    task.cancel();
+		}else{
+			task.cancel();
+			task = new TimerTask(){    	
+				public void run(){
+					loadTimeline();
+				}
+			};
+		    timer.scheduleAtFixedRate(task, 0, period);
+		}
+	}
+	
+	protected void searchResults(String query){
+		List<Tweet> results;
+		try {
+			results = twitter.searchTweets(query);
+			TweetTableModel searchModel = new TweetTableModel(results);
+			tabs.setSelectedIndex(1);
+			search.setModel(searchModel);
+		} catch (SearchFailException exception) {
+			JOptionPane.showMessageDialog(null, exception.getMessage());
+		}
 	}
 	
 	private void loadTimeline(){
 		try {
 			List<Tweet> timeline = twitter.timeline();
-			TweetListModel tweetsModel = new TweetListModel(timeline);
-			tabs.setSelectedIndex(0);
+			TweetTableModel tweetsModel = new TweetTableModel(timeline);
 			home.setModel(tweetsModel);
-		}catch (TwitterException e){}
+		}catch (UpdateTimelineFailException exception){
+			JOptionPane.showMessageDialog(null, exception.getMessage());
+		}
 	}
 	
 }

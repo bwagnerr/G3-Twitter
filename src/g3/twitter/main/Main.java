@@ -10,7 +10,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ITwitter twitter = new RealTwitter();
+		TwitterInterface twitter = new RealTwitter();
 		MainWindow view = new MainWindow(twitter);
 	    view.display();
 	}

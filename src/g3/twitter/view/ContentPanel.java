@@ -1,9 +1,6 @@
 package g3.twitter.view;
 
-import java.util.List;
-
-import g3.twitter.controller.ITwitter;
-import g3.twitter.model.Tweet;
+import g3.twitter.controller.TwitterInterface;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -18,9 +15,9 @@ public class ContentPanel extends JPanel{
 	SidePanel sidePanel;
 	MainPanel mainPanel;
 	
-	ITwitter twitter;
+	TwitterInterface twitter;
 
-	public ContentPanel(ITwitter twitter){
+	public ContentPanel(TwitterInterface twitter){
 		this.twitter = twitter;
 		define();
 		position();		
@@ -57,9 +54,12 @@ public class ContentPanel extends JPanel{
 		gl.setVerticalGroup(pg);
 	}
 
-	public void searchResults(List<Tweet> results)
-	{
-		mainPanel.searchResults(results);		
+	public void searchResults(String query){
+		mainPanel.searchResults(query);		
+	}
+	
+	public void setTimer(int period){
+		mainPanel.changeTimer(period);
 	}
 
 }
